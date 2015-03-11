@@ -1,6 +1,5 @@
 #include <fstream>
 #include <math.h>
-#include <iostream>
 
 int main ()
 {
@@ -24,8 +23,8 @@ int main ()
     alpha_new = alpha_old + step * alpha_dot_old;
     alpha_dot_new = alpha_dot_old - step * sin(alpha_old);
 
-    // nur jede Sekunde speichern
-    if (i % steps_per_second == 0)
+    // nur jede halbe Sekunde speichern
+    if (i % (steps_per_second / 2) == 0)
       values_file << alpha_new << " " << alpha_dot_new << std::endl;
 
     alpha_old = alpha_new;
