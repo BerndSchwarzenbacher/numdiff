@@ -3,19 +3,24 @@
 // a simple ODE - solver library
 // Joachim Schoeberl
 
+#include "bla/bla.hpp"
+
 
 // the base class for the right-hand-side f(t,y)
 class ODE_Function
 {
 public:
   // must be overloaded by derived class
-  virtual void Eval (double t, const Vector<> & y, Vector<> & f) const = 0;
+  virtual void Eval (double t, const ngbla::Vector<> & y, ngbla::Vector<> & f)
+    const = 0;
 
-  virtual void EvalDfDy (double t, const Vector<> & y, Matrix<> & dfdy) const
+  virtual void EvalDfDy (double t,
+                         const ngbla::Vector<> & y,
+                         ngbla::Matrix<> & dfdy) const
   {
     // numerical differentiation
     int n = y.Size();
-    Vector<> yr(n), yl(n), fr(n), fl(n);
+    ngbla::Vector<> yr(n), yl(n), fr(n), fl(n);
     double eps = 1e-6;
     for (int i = 0; i < n; i++)
     {
@@ -37,7 +42,8 @@ class SSM
 public:
   // do the step
   virtual void Step (double t, double h, const ODE_Function & func,
-                     const Vector<> & yold, Vector<> & ynew) const = 0;
+                     const ngbla::Vector<> & yold, ngbla::Vector<> & ynew)
+    const = 0;
 };
 
 
@@ -46,13 +52,13 @@ public:
 
 // the time integration loop
 void ODESolver (const ODE_Function & func, const SSM & ssm,
-                double t0, Vector<> & y0, double tend, double h,
-                ostream & out)
+                double t0, ngbla::Vector<> & y0, double tend, double h,
+                std::ostream & out)
 {
   double t = t0;
   int n = y0.Size();
 
-  Vector<> yold(n), ynew(n);
+  ngbla::Vector<> yold(n), ynew(n);
 
   yold = y0;
   while (t < tend)
@@ -60,7 +66,7 @@ void ODESolver (const ODE_Function & func, const SSM & ssm,
     out << t;
     for (int i = 0; i < n; ++i)
       out << " " << yold(i);
-    out << endl;
+    out << std::endl;
 
     ssm.Step (t, h, func, yold, ynew);
     yold = ynew;
@@ -83,9 +89,9 @@ class ExplicitEuler : public SSM
 {
 public:
   virtual void Step (double t, double h, const ODE_Function & func,
-                     const Vector<> & yold, Vector<> & ynew) const
+                     const ngbla::Vector<> & yold, ngbla::Vector<> & ynew) const
   {
-    Vector<> f(yold.Size());
+    ngbla::Vector<> f(yold.Size());
 
     func.Eval (t, yold, f);
     ynew = yold + h * f;
@@ -97,9 +103,9 @@ class ImprovedEuler : public SSM
 {
 public:
   virtual void Step (double t, double h, const ODE_Function & func,
-                     const Vector<> & yold, Vector<> & ynew) const
+                     const ngbla::Vector<> & yold, ngbla::Vector<> & ynew) const
   {
-    Vector<> f(yold.Size());
+    ngbla::Vector<> f(yold.Size());
 
     func.Eval (t, yold, f);
     ynew = yold + h/2.0 * f;
