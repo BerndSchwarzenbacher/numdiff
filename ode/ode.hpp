@@ -53,24 +53,29 @@ public:
 // the time integration loop
 void ODESolver (const ODE_Function & func, const SSM & ssm,
                 double t0, ngbla::Vector<> & y0, double tend, double h,
-                std::ostream & out)
+                int save_every, std::ostream & out)
 {
   double t = t0;
   int n = y0.Size();
+  int i = 0;
 
   ngbla::Vector<> yold(n), ynew(n);
 
   yold = y0;
   while (t < tend)
   {
-    out << t;
-    for (int i = 0; i < n; ++i)
-      out << " " << yold(i);
-    out << std::endl;
+    if ((i % save_every) == 0)
+    {
+      out << t;
+      for (int i = 0; i < n; ++i)
+        out << " " << yold(i);
+      out << std::endl;
+    }
 
     ssm.Step (t, h, func, yold, ynew);
     yold = ynew;
     t += h;
+    ++i;
   }
 }
 
