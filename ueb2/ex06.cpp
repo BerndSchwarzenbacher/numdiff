@@ -3,23 +3,25 @@
 #include "implicit_euler.hpp"
 
 
-class Pendulum_ODE_Function : public ODE_Function
+class Impl_Pendulum_ODE_Function : public ODE_Function
 {
 private:
   double _length;
   double _mass;
   double _gravity;
+  double _step;
 
 public:
-  Pendulum_ODE_Function (double length, double mass, double gravity)
-    : _length(length), _mass(mass), _gravity(gravity)
+  Impl_Pendulum_ODE_Function (double length, double mass, double gravity,
+                              double step)
+    : _length(length), _mass(mass), _gravity(gravity), _step(step)
   { }
 
-  virtual void Eval (double time, const ngbla::Vector<> & y,
-                     ngbla::Vector<> & f) const
+  virtual void Eval (double time, const ngbla::Vector<> & y_old,
+                     ngbla::Vector<> & y_new) const
   {
-    f(0) = y(1);
-    f(1) = - _gravity / _length * sin(y(0));
+    y_new(0) = y_new(0) - y_old(0) - _step * y_old(1);
+    y_new(1) = y_new(1) - y_old(1) - _step * sin(y_old(0));
   }
 
 };
@@ -31,12 +33,16 @@ int main ()
   ImprovedEuler impr_euler;
   ImplicitEuler impl_euler;
 
+  double step = 1e-3;
+  double t0 = 0;
+  double t_end = 1;
+
   std::ofstream out("ex06.out");
-  Pendulum_ODE_Function func(1, 1, 1);
+  Impl_Pendulum_ODE_Function func(1, 1, 1, step);
   ngbla::Vector<> y0(2);
   y0(0) = M_PI/4;
   y0(1) = 0;
-  ODESolver (func, impl_euler, 0, y0, 1, 1e-3, out);
+  ODESolver (func, impl_euler, t0, y0, t_end, step, out);
 
   //ofstream out2("mass_spring.out");
   //MassSpring_ODE_Function ms(10, 1);

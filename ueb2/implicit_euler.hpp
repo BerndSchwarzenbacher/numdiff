@@ -15,37 +15,32 @@ public:
     const double size = y_old.Size();
     ngbla::Matrix<double> f_jacobi(size, size);
     ngbla::Matrix<double> f_inverse(size, size);
-    ngbla::Matrix<double> f_step(size, size);
     ngbla::Vector<> f_eval(size);
 
     double qt = 0;
 
-    ngbla::Matrix<double> id = ngbla::Identity(size);
     ngbla::Vector<> y_delta(size);
     ngbla::Vector<> y_delta_old(size);
 
     // y_old should be a good start value for y
     ode_func.EvalDfDy(time, y_old, f_jacobi);
-    f_step = id - step * f_jacobi;
-    ngbla::CalcInverse(f_step, f_inverse);
+    ngbla::CalcInverse(f_jacobi, f_inverse);
 
     ode_func.Eval(time, y_old, f_eval);
-    y_delta = - f_inverse * (y_old - step * f_eval);
+    y_delta = - f_inverse * f_eval;
     y_new = y_old + y_delta;
 
-    double tol = 1e-1;
+    double tol = 1e-2;
 
     do
     {
       ode_func.EvalDfDy(time, y_new, f_jacobi);
-      f_step = id - step * f_jacobi;
-      ngbla::CalcInverse(f_step, f_inverse);
+      ngbla::CalcInverse(f_jacobi, f_inverse);
 
       ode_func.Eval(time, y_new, f_eval);
 
       y_delta_old = y_delta;
-      y_delta = -f_inverse * (y_old - step * f_eval);
-
+      y_delta = - f_inverse * f_eval;
       y_new += y_delta;
       qt = L2Norm(y_delta) / L2Norm(y_delta_old);
 
