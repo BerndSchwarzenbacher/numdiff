@@ -1,6 +1,6 @@
 CXX = g++
 FLAGS = -std=c++11 ../ode/bla/bla.so
-OBJECTS = ex06.o
+OBJECTS = ex06.o ex08.o
 
 all: $(OBJECTS)
 
