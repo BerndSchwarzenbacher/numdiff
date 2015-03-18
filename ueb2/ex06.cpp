@@ -40,12 +40,12 @@ int main ()
   //ImprovedEuler impr_euler;
   ImplicitEuler impl_euler;
 
-  double step = 1e-4;
+  double step = 1e-5;
   double t0 = 0;
   double t_end = 10000;
-  int save_every = 5e3;
+  int save_every = 5e4;
 
-  std::ofstream out("ex06.out");
+  std::ofstream out("ex06_impl_1e-5.out");
   Pendulum_ODE_Function func(1, 1, 1);
   ngbla::Vector<> y0(2);
   y0(0) = M_PI/4;
