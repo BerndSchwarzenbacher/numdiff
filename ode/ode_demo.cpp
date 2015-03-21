@@ -8,6 +8,7 @@
 using namespace ngbla;
 
 #include "ode.hpp"
+#include "RK_orig.hpp"
 
 
 
@@ -57,12 +58,13 @@ int main ()
 {
   ExplicitEuler expl_euler;
   ImprovedEuler impr_euler;
+  ImprovedEulerRK RK_impr_euler;
 
   ofstream out("data.out");
   My_First_ODE_Function func(1);
   Vector<> y0(1);  // initial conditions
   y0(0) = 1.0;
-  ODESolver (func, expl_euler, 0, y0, 10, 0.1, out);
+  ODESolver (func, expl_euler, 0, y0, 10, 0.1, 1, out);
 
 
   ofstream out2("mass_spring.out");
@@ -70,7 +72,10 @@ int main ()
   Vector<> y0ms(2);
   y0ms(0) = 1.0;
   y0ms(1) = 0;
-  ODESolver (ms, impr_euler, 0, y0ms, 1000, 0.1, out2);
+  ODESolver (ms, impr_euler, 0, y0ms, 1000, 0.1, 1, out2);
+
+  ofstream out3("mass_spring_RK.out");
+  ODESolver(ms, RK_impr_euler, 0, y0ms, 1000, 0.1, 1, out3);
 
   return 0;
 }
