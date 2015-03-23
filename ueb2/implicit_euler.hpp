@@ -26,24 +26,22 @@ public:
     ngbla::Vector<> y_delta_old(size);
 
     // y_old should be a good start value for y
-    ode_func.EvalDfDy(time, y_old, f_jacobi);
+    ode_func.EvalDfDy(time+step, y_old, f_jacobi);
     f_step = step * f_jacobi - id;
-    //std::cout << "F_step: " << std::endl << f_step << std::endl;
     ngbla::CalcInverse(f_step, f_inverse);
-    //std::cout << "F_inverse: " << std::endl << f_inverse << std::endl;
 
-    ode_func.Eval(time, y_old, f_eval);
+    ode_func.Eval(time+step, y_old, f_eval);
     f_eval = step * f_eval;
     y_delta = - f_inverse * f_eval;
     y_new = y_old + y_delta;
 
     do
     {
-      ode_func.EvalDfDy(time, y_new, f_jacobi);
+      ode_func.EvalDfDy(time+step, y_new, f_jacobi);
       f_step = step * f_jacobi - id;
       ngbla::CalcInverse(f_step, f_inverse);
 
-      ode_func.Eval(time, y_new, f_eval);
+      ode_func.Eval(time+step, y_new, f_eval);
       f_eval = y_old - y_new + step * f_eval;
 
       y_delta_old = y_delta;

@@ -40,6 +40,7 @@ public:
 
     ngbla::Vector<> yi(n), ki(n);
     ngbla::Vector<> all_ki(stages*n);
+    all_ki = 0.0;
 
     for (int i = 0; i < stages; i++)
     {
