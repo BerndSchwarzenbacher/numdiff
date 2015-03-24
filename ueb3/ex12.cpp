@@ -53,9 +53,6 @@ int main ()
   std::ofstream out2("ex12_two_step_gauss.out");
   ODESolver (func, two_step_gauss, t0, y0, t_end, step, save_every, out2);
 
-  //std::ofstream out2("ex06_expl_euler.out");
-  //ODESolver (func, expl_euler, t0, y0, t_end, step, save_every, out2);
-
   return 0;
 }
 
