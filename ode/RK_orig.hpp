@@ -100,3 +100,6 @@ public:
     SetAbc (A, b, c);
   }
 };
+
+#endif
+
