@@ -63,7 +63,7 @@ int main ()
   ODESolver (func, impl_euler, t0, y0, t_end, 1e-2, 1, out3);
   ODESolver (func, impl_euler, t0, y0, t_end, 1e-3, 1, out4);
 
-  std::ofstream out5("data/ex14_impl_mp_out");
+  std::ofstream out5("data/ex14_impl_mp_1.out");
   std::ofstream out6("data/ex14_impl_mp_e-1.out");
   std::ofstream out7("data/ex14_impl_mp_e-2.out");
   std::ofstream out8("data/ex14_impl_mp_e-3.out");
