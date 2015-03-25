@@ -43,14 +43,14 @@ int main ()
   double t_end = 10000;
   int save_every = 2e2;
 
-  std::ofstream out("ex12_impl_mp.out");
+  std::ofstream out("data/ex12_impl_mp.out");
   Pendulum_ODE_Function func(1, 1, 1);
   ngbla::Vector<> y0(2);
   y0(0) = M_PI/4;
   y0(1) = 0;
   ODESolver (func, impl_mp, t0, y0, t_end, step, save_every, out);
 
-  std::ofstream out2("ex12_two_step_gauss.out");
+  std::ofstream out2("data/ex12_two_step_gauss.out");
   ODESolver (func, two_step_gauss, t0, y0, t_end, step, save_every, out2);
 
   return 0;

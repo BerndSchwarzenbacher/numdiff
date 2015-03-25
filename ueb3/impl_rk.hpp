@@ -30,14 +30,14 @@ public:
     ngbla::Vector<> f_eval(n);
 
     double qt = 0.0;
-    double tol = 1e-2;
+    double tol = 1e-4;
 
     ngbla::Vector<> k_delta(N);
     ngbla::Vector<> k_delta_old(N);
 
     for (int i = 0; i < stages; ++i)
     {
-      int ti = time + step * c(i);
+      double ti = time + step * c(i);
 
       ngbla::Vector<> yi(n);
       yi = yold;
@@ -49,12 +49,16 @@ public:
       func.EvalDfDy(ti, yi, dfdy);
 
       for (int ki_entry = 0; ki_entry < n; ++ki_entry)
+      {
         for (int l = 0; l < stages; ++l)
+        {
           for (int kl_entry = 0; kl_entry < n; ++kl_entry)
           {
             dFdy(i*n + ki_entry, l*n + kl_entry)
               = A(i, l) * all_ki_old(l*n+kl_entry);
           }
+        }
+      }
 
     }
     F_eval -= all_ki_old;
@@ -65,13 +69,14 @@ public:
     k_delta = dFdy_inverse * F_eval;
     all_ki_new = all_ki_old - k_delta;
 
+    int cnt=0;
     do
     {
       all_ki_old = all_ki_new;
 
       for (int i = 0; i < stages; ++i)
       {
-        int ti = time + step * c(i);
+        double ti = time + step * c(i);
 
         ngbla::Vector<> yi(n);
         yi = yold;
@@ -83,12 +88,16 @@ public:
         func.EvalDfDy(ti, yi, dfdy);
 
         for (int ki_entry = 0; ki_entry < n; ++ki_entry)
+        {
           for (int l = 0; l < stages; ++l)
+          {
             for (int kl_entry = 0; kl_entry < n; ++kl_entry)
             {
               dFdy(i*n + ki_entry, l*n + kl_entry)
                 = A(i, l) * all_ki_old(l*n+kl_entry);
             }
+          }
+        }
 
       }
       F_eval -= all_ki_old;
@@ -101,11 +110,12 @@ public:
       all_ki_new -= k_delta;
 
       qt = L2Norm(k_delta) / L2Norm(k_delta_old);
-      if (qt >= 1)
+      if (qt >= 1 && cnt >= 10)
       {
         std::cout << "Newton-Verfahren konvergiert nicht!" << std::endl;
         break;
       }
+      ++cnt;
     }
     while ((qt / (1 - qt) * L2Norm(k_delta)) > tol);
 
@@ -146,6 +156,23 @@ public:
     A = 0.25;
     A(0, 1) = 0.25 - sqrt(3) / 6.0;
     A(1, 0) = 0.25 + sqrt(3) / 6.0;
+
+    SetAbc (A, b, c);
+  }
+};
+
+class ImplicitEulerRK : public ImplicitRKMethod
+{
+public:
+  ImplicitEulerRK() : ImplicitRKMethod (1)
+  {
+    ngbla::Matrix<> A(1,1);
+    ngbla::Vector<> b(1), c(1);
+
+    c = 1.0;
+    b = 1.0;
+
+    A = 1.0;
 
     SetAbc (A, b, c);
   }

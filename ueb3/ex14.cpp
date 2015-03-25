@@ -44,6 +44,7 @@ public:
 int main ()
 {
   ImplicitEuler impl_euler;
+  ImplicitEuler impl_euler_rk;
   ImplicitMP impl_mp;
 
   double t0 = 0;
@@ -58,10 +59,10 @@ int main ()
   std::ofstream out2("data/ex14_impl_eul_e-1.out");
   std::ofstream out3("data/ex14_impl_eul_e-2.out");
   std::ofstream out4("data/ex14_impl_eul_e-3.out");
-  ODESolver (func, impl_euler, t0, y0, t_end, 1,    1, out1);
-  ODESolver (func, impl_euler, t0, y0, t_end, 1e-1, 1, out2);
-  ODESolver (func, impl_euler, t0, y0, t_end, 1e-2, 1, out3);
-  ODESolver (func, impl_euler, t0, y0, t_end, 1e-3, 1, out4);
+  ODESolver (func, impl_euler_rk, t0, y0, t_end, 1,    1, out1);
+  ODESolver (func, impl_euler_rk, t0, y0, t_end, 1e-1, 1, out2);
+  ODESolver (func, impl_euler_rk, t0, y0, t_end, 1e-2, 1, out3);
+  ODESolver (func, impl_euler_rk, t0, y0, t_end, 1e-3, 1, out4);
 
   std::ofstream out5("data/ex14_impl_mp_1.out");
   std::ofstream out6("data/ex14_impl_mp_e-1.out");
