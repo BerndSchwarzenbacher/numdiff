@@ -10,7 +10,7 @@ class ImplicitRKMethod : public RungeKuttaMethod
 public:
   ImplicitRKMethod (int as) : RungeKuttaMethod (as) { ; }
 
-  virtual void Step ( double time, double step, const ODE_Function & func,
+  virtual bool Step ( double time, double step, const ODE_Function & func,
                       const ngbla::Vector<> & yold, ngbla::Vector<> & ynew )
     const
   {
@@ -113,7 +113,7 @@ public:
       if (qt >= 1 && cnt >= 10)
       {
         std::cout << "Newton-Verfahren konvergiert nicht!" << std::endl;
-        break;
+        return false;
       }
       ++cnt;
     }
@@ -122,6 +122,8 @@ public:
     ynew = yold;
     for (int i = 0; i < stages; i++)
       ynew += step * b(i) * all_ki_new.Range (i*n, (i+1)*n);
+
+    return true;
   }
 };
 

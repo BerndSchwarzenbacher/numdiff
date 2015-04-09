@@ -1,3 +1,12 @@
+# Ignore all
+*
+
+# Unignore all with extension
+!*.*
+
+# Unignore all directoris
+!*/
+
 */.ipynb_checkpoints/
 *.pdf
 tags

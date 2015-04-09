@@ -33,7 +33,7 @@ public:
   ExplicitRKMethod (int as) : RungeKuttaMethod (as){ ; }
 
 
-  virtual void Step (double t, double h, const ODE_Function & func,
+  virtual bool Step (double t, double h, const ODE_Function & func,
                      const ngbla::Vector<> & yold, ngbla::Vector<> & ynew) const
   {
     int n = yold.Size();
@@ -52,10 +52,11 @@ public:
       all_ki.Range(i*n, (i+1)*n) = ki;
     }
 
-
     ynew = yold;
     for (int i = 0; i < stages; i++)
       ynew += h * b(i) * all_ki.Range (i*n, (i+1)*n);
+
+    return true;
   }
 };
 
