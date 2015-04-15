@@ -1,7 +1,6 @@
 #include "../ode/bla/bla.hpp"
 #include "../ode/ode.hpp"
-#include "../ueb2/implicit_euler.hpp"
-#include "impl_rk.hpp"
+#include "../ode/impl_rk.hpp"
 
 
 class Network_ODE_Function : public ODE_Function
@@ -43,8 +42,7 @@ public:
 
 int main ()
 {
-  ImplicitEuler impl_euler;
-  ImplicitEuler impl_euler_rk;
+  ImplicitEulerRK impl_euler_rk;
   ImplicitMP impl_mp;
 
   double t0 = 0;

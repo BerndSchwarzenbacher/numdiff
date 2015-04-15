@@ -1,10 +1,10 @@
 CXX = g++
-FLAGS = -std=c++11 ../ode/bla/bla.so
-OBJECTS = ex12.o ex13.o ex14.o
+FLAGS = -std=c++11 ../ode/bla/bla.so -O2
+OBJECTS = ex12 ex13 ex14
 
 all: $(OBJECTS)
 
-%.o: %.cpp
+%: %.cpp
 	g++ $? $(FLAGS) -o $@
 
 clean:

@@ -43,6 +43,8 @@ public:
 int main ()
 {
   ImplicitTwoMax impl_two_max;
+  //ImplicitMP impl_two_max;
+  //ImplicitMPMethod impl_two_max;
 
   double t0 = 0;
   double t_end = 1000;

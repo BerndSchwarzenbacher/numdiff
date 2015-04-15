@@ -1,6 +1,6 @@
 #include "../ode/bla/bla.hpp"
 #include "../ode/ode.hpp"
-#include "impl_rk.hpp"
+#include "../ode/impl_rk.hpp"
 
 
 class Pendulum_ODE_Function : public ODE_Function
