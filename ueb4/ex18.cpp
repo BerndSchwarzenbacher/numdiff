@@ -71,18 +71,16 @@ int main ()
 {
   ImplicitMP impl_mp;
   TwoStepGauss two_step;
-  ExplicitEuler expl_euler;
-  ImprovedEuler impr_euler;
 
   double t_0 = 0;
   double t_end = 200;
-  double tol = 1e-3;
+  double tol = 1e-4;
   double alpha_min = 0.2;
   double alpha_max = 2.0;
   double beta = 0.9;
-  double h_start = 1e-3;
-  double h_min = 1e-7;
-  double h_max = 1;
+  double h_start = 1e-6;
+  double h_min = 1e-8;
+  double h_max = 1e-2;
   double save_every = 1e-3;
 
   Chemical_Reaction5 func(1.34, 1.6*1e9, 8.0*1e3, 4.0*1e7, 1.0);
@@ -97,10 +95,6 @@ int main ()
   ODESolverAdaptive (func, impl_mp, two_step, t_0, t_end, y_0, tol,
                      alpha_min, alpha_max, beta, h_start, h_min, h_max,
                      save_every, out);
-
-  //ODESolverAdaptive (func, expl_euler, impr_euler, t_0, t_end, y_0, tol,
-                     //alpha_min, alpha_max, beta, h_start, h_min, h_max,
-                     //save_every, out);
 
   return 0;
 }

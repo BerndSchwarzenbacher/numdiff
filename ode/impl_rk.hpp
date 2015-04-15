@@ -22,10 +22,12 @@ public:
     all_ki_old = 0.0;
     all_ki_new = 0.0;
 
-    ngbla::Matrix<double> dfdy(n, n);
-    ngbla::Matrix<double> dFdy(N, N);
-    ngbla::Matrix<double> dFdy_inverse(N, N);
-    ngbla::Matrix<double> id = ngbla::Identity(N);
+    ngbla::Matrix<> dfdy(n);
+    ngbla::Matrix<> dFdy(N);
+    ngbla::Matrix<> dFdy_inverse(N);
+    ngbla::Identity id(N);
+    ngbla::Identity id_n(n);
+    ngbla::Matrix<> MatrixA(n, n*stages); //Matrix aus Diag(a_il) Bloecken
     ngbla::Vector<> F_eval(N);
     ngbla::Vector<> f_eval(n);
 
@@ -34,6 +36,15 @@ public:
 
     ngbla::Vector<> k_delta(N);
     ngbla::Vector<> k_delta_old(N);
+
+
+		//Startwerte fuer Newton Iteration
+		for (int i = 0; i < stages; i++)
+		{
+			double ti = time + step * c(i);
+			func.Eval(ti, yold, f_eval);
+			all_ki_old.Range(i*n, (i + 1)*n) = f_eval;
+		}
 
     for (int i = 0; i < stages; ++i)
     {
@@ -48,21 +59,29 @@ public:
       F_eval.Range(i*n, (i+1)*n) = f_eval;
       func.EvalDfDy(ti, yi, dfdy);
 
-      for (int ki_entry = 0; ki_entry < n; ++ki_entry)
+      // Irgend ein Fehler hier
+      //for (int ki_entry = 0; ki_entry < n; ++ki_entry)
+      //{
+        //for (int l = 0; l < stages; ++l)
+        //{
+          //for (int kl_entry = 0; kl_entry < n; ++kl_entry)
+          //{
+            //dFdy(i*n + ki_entry, l*n + kl_entry)
+              //= A(i, l) * all_ki_old(l*n+kl_entry);
+          //}
+        //}
+      //}
+
+      for (int k = 0; k < stages; ++k)
       {
-        for (int l = 0; l < stages; ++l)
-        {
-          for (int kl_entry = 0; kl_entry < n; ++kl_entry)
-          {
-            dFdy(i*n + ki_entry, l*n + kl_entry)
-              = A(i, l) * all_ki_old(l*n+kl_entry);
-          }
-        }
+        MatrixA.Cols(k*n, (k + 1)*n) = A(i, k)*id_n;
       }
+
+      dFdy.Rows(i*n, (i + 1)*n) = dfdy * (step * MatrixA);
 
     }
     F_eval -= all_ki_old;
-    dFdy = step * dFdy - id;
+    dFdy = dFdy - id;
 
     ngbla::CalcInverse(dFdy, dFdy_inverse);
     // überprüft ob DF wirklich invertierbar war
@@ -94,21 +113,28 @@ public:
         F_eval.Range(i*n, (i+1)*n) = f_eval;
         func.EvalDfDy(ti, yi, dfdy);
 
-        for (int ki_entry = 0; ki_entry < n; ++ki_entry)
+        //for (int ki_entry = 0; ki_entry < n; ++ki_entry)
+        //{
+          //for (int l = 0; l < stages; ++l)
+          //{
+            //for (int kl_entry = 0; kl_entry < n; ++kl_entry)
+            //{
+              //dFdy(i*n + ki_entry, l*n + kl_entry)
+                //= A(i, l) * all_ki_old(l*n+kl_entry);
+            //}
+          //}
+        //}
+
+        for (int k = 0; k < stages; ++k)
         {
-          for (int l = 0; l < stages; ++l)
-          {
-            for (int kl_entry = 0; kl_entry < n; ++kl_entry)
-            {
-              dFdy(i*n + ki_entry, l*n + kl_entry)
-                = A(i, l) * all_ki_old(l*n+kl_entry);
-            }
-          }
+          MatrixA.Cols(k*n, (k + 1)*n) = A(i, k)*id_n;
         }
+
+        dFdy.Rows(i*n, (i + 1)*n) = dfdy * (step * MatrixA);
 
       }
       F_eval -= all_ki_old;
-      dFdy = step * dFdy - id;
+      dFdy = dFdy - id;
 
       ngbla::CalcInverse(dFdy, dFdy_inverse);
       // überprüft ob DF wirklich invertierbar war
@@ -124,7 +150,7 @@ public:
       all_ki_new -= k_delta;
 
       qt = L2Norm(k_delta) / L2Norm(k_delta_old);
-      if (qt >= 1 && cnt >= 10)
+      if (qt >= 1 && cnt >= 20)
       {
         std::cout << "Newton-Verfahren konvergiert nicht!" << std::endl;
         return false;
@@ -196,6 +222,8 @@ public:
 
     SetAbc (A, b, c);
   }
+
+  virtual int Order () const { return 1; }
 };
 
 
