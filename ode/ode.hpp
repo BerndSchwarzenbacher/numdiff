@@ -148,9 +148,8 @@ void ODESolverAdaptive (const ODE_Function & func, const SSM & ssm_low_order,
   out << t;
   out << " " << h;
   for (int i = 0; i < dim; ++i)
-    out << " " << y_old(i);
+    out << " " << std::setprecision(15) << y_old(i);
   out << std::endl;
-
 }
 
 
