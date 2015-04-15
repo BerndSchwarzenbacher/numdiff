@@ -65,6 +65,13 @@ public:
     dFdy = step * dFdy - id;
 
     ngbla::CalcInverse(dFdy, dFdy_inverse);
+    // überprüft ob DF wirklich invertierbar war
+    if (dFdy_inverse(0, 0) != dFdy_inverse(0, 0))
+    {
+      std::cout << "Inverse nicht berechenbar: t=" << time
+                << " h=" << step << std::endl;
+      return false;
+    }
 
     k_delta = dFdy_inverse * F_eval;
     all_ki_new = all_ki_old - k_delta;
@@ -104,6 +111,13 @@ public:
       dFdy = step * dFdy - id;
 
       ngbla::CalcInverse(dFdy, dFdy_inverse);
+      // überprüft ob DF wirklich invertierbar war
+      if (dFdy_inverse(0, 0) != dFdy_inverse(0, 0))
+      {
+        std::cout << "Inverse nicht berechenbar: t=" << time
+                  << " h=" << step << std::endl;
+        return false;
+      }
 
       k_delta_old = k_delta;
       k_delta = dFdy_inverse * F_eval;
@@ -142,6 +156,8 @@ public:
 
     SetAbc (A, b, c);
   }
+
+  virtual int Order () const { return 2; }
 };
 
 class TwoStepGauss : public ImplicitRKMethod
@@ -161,6 +177,8 @@ public:
 
     SetAbc (A, b, c);
   }
+
+  virtual int Order () const { return 4; }
 };
 
 class ImplicitEulerRK : public ImplicitRKMethod
@@ -178,6 +196,29 @@ public:
 
     SetAbc (A, b, c);
   }
+};
+
+
+class ImplicitTwoMax : public ImplicitRKMethod
+{
+public:
+  ImplicitTwoMax() : ImplicitRKMethod (2)
+  {
+    ngbla::Matrix<> A(2,2);
+    ngbla::Vector<> b(2), c(2);
+
+    c = { 1.0 / 3.0, 1};
+    b = { 0.75, 0.25 };
+
+    A(0, 0) =   5.0 / 12.0;
+    A(0, 1) = - 1.0 / 12.0;
+    A(1, 0) =   0.75;
+    A(1, 1) =   0.25;
+
+    SetAbc (A, b, c);
+  }
+
+  virtual int Order () const { return 3; }
 };
 
 #endif

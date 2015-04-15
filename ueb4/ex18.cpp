@@ -1,5 +1,6 @@
 #include "../ode/bla/bla.hpp"
 #include "../ode/ode.hpp"
+#include "../ode/impl_rk.hpp"
 
 
 class Chemical_Reaction5 : public ODE_Function
@@ -16,22 +17,22 @@ public:
     : _k1(k1), _k2(k2), _k3(k3), _k4(k4), _k5(k5)
   { }
 
-  virtual void Eval (double time, const ngbla::Vector<> & y_old,
-                     ngbla::Vector<> & y_new) const
+  virtual void Eval (double time, const ngbla::Vector<> & y,
+                     ngbla::Vector<> & f) const
   {
-    y_new(0) =  - _k1 * y_old(0) * y_old(1) - _k3 * y_old(0) * y_old(2)
-                + _k4 * y_old(2) * y_old(2);
+    f(0) =  - _k1 * y(0) * y(1) - _k3 * y(0) * y(2)
+            + _k4 * y(2) * y(2);
 
-    y_new(1) =  - _k1 * y_old(0) * y_old(1) - _k2 * y_old(1) * y_old(2)
-                + _k5 * y_old(4);
+    f(1) =  - _k1 * y(0) * y(1) - _k2 * y(1) * y(2)
+            + _k5 * y(4);
 
-    y_new(2) =    _k1 * y_old(0) * y_old(1) - _k2 * y_old(1) * y_old(2)
-                + _k3 * y_old(0) * y_old(2) - 2 * _k4 * y_old(2) * y_old(2);
+    f(2) =    _k1 * y(0) * y(1) - _k2 * y(1) * y(2)
+            + _k3 * y(0) * y(2) - 2 * _k4 * y(2) * y(2);
 
-    y_new(3) =    _k1 * y_old(0) * y_old(1) + _k2 * y_old(1) * y_old(2)
-                + _k4 * y_old(2) * y_old(2);
+    f(3) =    _k1 * y(0) * y(1) + _k2 * y(1) * y(2)
+            + _k4 * y(2) * y(2);
 
-    y_new(4) =    _k3 * y_old(0) * y_old(2) - _k5 * y_old(4);
+    f(4) =    _k3 * y(0) * y(2) - _k5 * y(4);
 
   }
 
@@ -68,6 +69,8 @@ public:
 
 int main ()
 {
+  ImplicitMP impl_mp;
+  TwoStepGauss two_step;
   ExplicitEuler expl_euler;
   ImprovedEuler impr_euler;
 
@@ -82,7 +85,7 @@ int main ()
   double h_max = 1;
   double save_every = 1e-3;
 
-  Chemical_Reaction5 func(1.34, 1.6e9, 8.0e3, 4.0e7, 1.0);
+  Chemical_Reaction5 func(1.34, 1.6*1e9, 8.0*1e3, 4.0*1e7, 1.0);
   ngbla::Vector<> y_0(5);
   y_0(0) = 0.05;
   y_0(1) = 1e-4;
@@ -91,9 +94,13 @@ int main ()
   y_0(4) = 1e-4;
 
   std::ofstream out("data/ex18.out");
-  ODESolverAdaptive (func, expl_euler, impr_euler, t_0, t_end, y_0, tol,
+  ODESolverAdaptive (func, impl_mp, two_step, t_0, t_end, y_0, tol,
                      alpha_min, alpha_max, beta, h_start, h_min, h_max,
                      save_every, out);
+
+  //ODESolverAdaptive (func, expl_euler, impr_euler, t_0, t_end, y_0, tol,
+                     //alpha_min, alpha_max, beta, h_start, h_min, h_max,
+                     //save_every, out);
 
   return 0;
 }

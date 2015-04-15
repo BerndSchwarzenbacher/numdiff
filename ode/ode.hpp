@@ -126,7 +126,7 @@ void ODESolverAdaptive (const ODE_Function & func, const SSM & ssm_low_order,
         if ( h == h_min )
           throw ngstd::Exception();
 
-        h_new = fmin (h/2, h_min);
+        h_new = fmax (h / 2.0, h_min);
         continue;
       }
 
