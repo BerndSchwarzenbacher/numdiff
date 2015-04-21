@@ -81,6 +81,35 @@ public:
 
     SetAbc (A, b, c);
   }
+
+  virtual int Order () const { return 4; }
+};
+
+class Bogacki_Shampine3 : public ExplicitRKMethod
+{
+public:
+  Bogacki_Shampine3() : ExplicitRKMethod(4)
+  {
+    ngbla::Matrix<> A(4,4);
+    ngbla::Vector<> b(4), c(4);
+
+    c = { 0, 0.5, 0.75, 1 };
+
+    b = { 2.0/9, 1.0/3, 4.0/9, 0};
+
+    A = 0.0;
+
+    A(1,0) = 0.5;
+    A(2,1) = 0.75;
+
+    A(3,0) = 2.0/9;
+    A(3,1) = 1.0/3;
+    A(3,2) = 4.0/9;
+
+    SetAbc (A, b, c);
+  }
+
+  virtual int Order () const { return 3; }
 };
 
 
